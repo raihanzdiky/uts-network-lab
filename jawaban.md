@@ -9,6 +9,43 @@
 
 ---
 
+## Persiapan Environment & Image Lab
+
+```bash
+$ docker build -t uts-openssl images/uts-openssl
+$ docker build -t uts-kali-tools images/uts-kali-tools
+$ docker build -t uts-dnsmasq images/uts-dnsmasq
+$ docker pull alpine$ docker pull nginx:alpine
+$ docker pull vulnerables/web-dvwa$ docker pull kalilinux/kali-rolling
+```
+Penjelasan:
+
+1. Pembangunan Custom Image (docker build):
+
+- uts-openssl: Membangun image lokal berisi perkakas kriptografi OpenSSL dari images/uts-openssl untuk kebutuhan enkripsi simetris, pembuatan pasangan kunci RSA, tanda tangan digital, dan sertifikat X.509.
+
+- uts-kali-tools: Membangun image lokal berbasis Kali Linux dari images/uts-kali-tools yang memuat utilitas pengujian keamanan jaringan seperti arpspoof (dsniff), hping3, tcpdump, netstat (net-tools), dig (dnsutils), aircrack-ng, dan Python scapy.
+
+- uts-dnsmasq: Membangun image layanan DNS internal dari images/uts-dnsmasq untuk simulasi resolusi domain lokal serta pemantauan log pada pengujian DNS exfiltration.
+
+2. Pengunduhan Base & Target Image (docker pull):
+
+- alpine: Mengunduh image Linux ringan berbasis Alpine sebagai host klien/pekerja untuk pengujian persistensi volume, jaringan bridge, dan komunikasi internal.
+
+- nginx:alpine: Mengunduh image web server Nginx ringan sebagai layanan target pada pengujian port mapping, jaringan terisolasi, maupun simulasi serangan SYN flood.
+
+- vulnerables/web-dvwa: Mengunduh image aplikasi web rentan (Damn Vulnerable Web Application) sebagai target layanan web pada pengujian konektivitas antar-container di jaringan bridge.
+
+- kalilinux/kali-rolling: Mengunduh image dasar Kali Linux rolling release yang menjadi fondasi sistem operasi bagi container pengujian keamanan jaringan.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="342" alt="image" src="https://github.com/user-attachments/assets/b45c79b9-4566-4f7f-a4bb-55d7c3bc071c" />
+<img width="940" height="229" alt="image" src="https://github.com/user-attachments/assets/b667eafb-6136-40de-9211-40695577c897" />
+<img width="940" height="251" alt="image" src="https://github.com/user-attachments/assets/c197fe07-e5f6-4f02-b95c-d4401fbf6783" />
+<img width="940" height="240" alt="image" src="https://github.com/user-attachments/assets/2a489574-7318-48ba-9566-0c2b8c148399" />
+<img width="940" height="507" alt="image" src="https://github.com/user-attachments/assets/4d46f7d2-bb60-47d3-bd1b-c37da5e7667f" />
+<img width="940" height="320" alt="image" src="https://github.com/user-attachments/assets/8c016e0a-043b-4ea7-a65b-89c625278ef6" />
+
 ## Bagian A: Soal Mudah
 
 ### A1. Container Dasar dan Port Mapping

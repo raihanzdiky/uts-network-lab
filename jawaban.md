@@ -143,6 +143,7 @@ Penjelasan:
 Perubahan satu karakter saja (huruf n kecil menjadi N kapital pada kata pesan) menyebabkan nilai hash MD5 maupun SHA-256 berubah total secara drastis dan tidak memiliki kemiripan pola dengan hash awal. Fenomena kriptografi ini disebut avalanche effect (efek longsoran), yang menjamin bahwa modifikasi sekecil apa pun pada suatu berkas dapat langsung terdeteksi untuk menjaga integritas data.
 
 **Hasil Bukti Praktikum**
+
 <img width="820" height="223" alt="image" src="https://github.com/user-attachments/assets/ecb6610e-1a57-46cf-965a-298dd0b68be5" />
 
 
@@ -285,6 +286,7 @@ Konfigurasi jaringan menggunakan opsi internal: true dan tanpa pemetaan ports me
 
 **yaml**
 <img width="922" height="332" alt="image" src="https://github.com/user-attachments/assets/6267a866-ada6-4173-99b9-9f50c2e54e5c" />
+
 
 
 **bash command**

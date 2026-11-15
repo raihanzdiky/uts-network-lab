@@ -97,6 +97,10 @@ error_log  /var/log/nginx/error.log notice;
 Penjelasan:
 Perintah docker run -d --name web-uts -p 8088:80 nginx:alpine menjalankan container web server Nginx di latar belakang (detached mode) dan memetakan port 8088 pada host ke port 80 di dalam container. Hasil docker ps memastikan status container berjalan (Up), curl berhasil mengambil halaman HTML bawaan Nginx melalui port 8088, dan docker exec membaca 5 baris pertama konfigurasi /etc/nginx/nginx.conf langsung dari dalam container yang sedang aktif.
 
+**Hasil Bukti Praktikum**
+<img width="940" height="437" alt="image" src="https://github.com/user-attachments/assets/9a28215f-6a82-43ef-8b1f-efa0703eea64" />
+
+
 ### A2. Persistensi Volume
 ```bash
 $ docker volume create data-uts
@@ -112,6 +116,10 @@ $ docker run --rm -v data-uts:/data alpine cat /data/catatan.txt
 ```
 Penjelasan:
 Volume Docker data-uts yang dipasang (mount) ke direktori /data menyimpan berkas catatan.txt berisi NIM (24552011194) secara terpisah dari siklus hidup container. Ketika container pertama (w1) dihapus dengan docker rm w1, data di dalam volume tetap bertahan dan berhasil dibaca kembali oleh container baru (--rm) yang terhubung ke volume data-uts.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="397" alt="image" src="https://github.com/user-attachments/assets/52797d81-44ac-40ed-9790-c235af69175f" />
+
 
 ### A3. Integritas file dengan hash
 ```bash
@@ -134,6 +142,10 @@ $ sha256sum pesan.txt
 Penjelasan:
 Perubahan satu karakter saja (huruf n kecil menjadi N kapital pada kata pesan) menyebabkan nilai hash MD5 maupun SHA-256 berubah total secara drastis dan tidak memiliki kemiripan pola dengan hash awal. Fenomena kriptografi ini disebut avalanche effect (efek longsoran), yang menjamin bahwa modifikasi sekecil apa pun pada suatu berkas dapat langsung terdeteksi untuk menjaga integritas data.
 
+**Hasil Bukti Praktikum**
+<img width="820" height="223" alt="image" src="https://github.com/user-attachments/assets/ecb6610e-1a57-46cf-965a-298dd0b68be5" />
+
+
 ### A4. Enkripsi Simetris dengan OpenSSL
 ```bash
 $ openssl enc -aes-256-cbc -pbkdf2 -salt -in pesan.txt -out pesan.enc -pass pass:kunci123
@@ -150,6 +162,10 @@ U2FsdGVkX1/OdyYARgdDaF+733Nn2/LBffz1QmXb58Y=
 ```
 Penjelasan:
 Berkas pesan.txt dienkripsi menggunakan algoritma simetris AES-256-CBC dengan fungsi derivasi kunci PBKDF2 dan salt acak memakai kata sandi kunci123. Proses dekripsi berhasil mengembalikan isi asli (pesaN rahasia) saat menggunakan kata sandi yang benar, namun gagal (bad decrypt) saat memakai kata sandi yang salah (salah) karena validasi padding blok dekripsi tidak sesuai. Opsi -a menghasilkan keluaran ciphertext dalam format teks Base64 agar aman ditransmisikan melalui media berbasis teks.
+
+**Hasil Bukti Praktikum**
+<img width="964" height="348" alt="image" src="https://github.com/user-attachments/assets/569c2aab-3306-4cee-be78-00445b7b9cd1" />
+
 
 ### A5. Jaringan bridge dan akses antar-container
 ```bash
@@ -197,6 +213,10 @@ null                 100% |********************************|  1523  0:00:00 ETA
 ```
 Penjelasan:
 Pembuatan jaringan user-defined bridge (lab-net) menyediakan layanan resolusi DNS internal otomatis antar-container yang terhubung di dalamnya. Hasilnya, container host-a dapat berkomunikasi langsung dengan host-b maupun mengakses layanan web dvwa (HTTP/1.1 200 OK) cukup dengan memanggil nama containernya tanpa perlu mengetahui alamat IP dinamis masing-masing.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="443" alt="image" src="https://github.com/user-attachments/assets/5c689077-78bb-4767-912c-3faa63f3521e" />
+
 
 ## Bagian B: Soal Medium
 
@@ -261,6 +281,16 @@ $ docker compose down -v
 Penjelasan:
 Konfigurasi jaringan menggunakan opsi internal: true dan tanpa pemetaan ports memblokir akses langsung dari host maupun ke internet luar, sementara komunikasi internal antar-container tetap berjalan sehingga attacker dapat mengakses layanan HTTP pada target menggunakan nama service-nya.
 
+**Hasil Bukti Praktikum**
+
+**yaml**
+<img width="922" height="332" alt="image" src="https://github.com/user-attachments/assets/6267a866-ada6-4173-99b9-9f50c2e54e5c" />
+
+
+**bash command**
+<img width="940" height="689" alt="image" src="https://github.com/user-attachments/assets/6064292a-6908-4b8e-a9c4-9a6c16854d99" />
+
+
 ### B2. Kriptografi RSA dan Sertifikat
 ```bash
 $ docker run --rm -it -v "$PWD":/work uts-openssl sh
@@ -285,6 +315,10 @@ notAfter=Dec 14 07:27:31 2026 GMT
 ```
 Perbedaan Sertifikat Self-Signed dan Sertifikat yang Ditandatangani CA:
 Sertifikat self-signed ditandatangani sendiri oleh pemilik kunci privatnya sehingga identitas penerbit (issuer) dan subjeknya sama serta tidak dipercaya secara otomatis oleh browser atau sistem operasi publik tanpa pemasangan manual. Sebaliknya, sertifikat yang ditandatangani oleh Certificate Authority (CA) diverifikasi dan disahkan oleh pihak ketiga tepercaya sehingga validitas identitas pemilik domain dijamin secara otomatis melalui rantai kepercayaan (chain of trust) bawaan sistem.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="388" alt="image" src="https://github.com/user-attachments/assets/f13ef999-2bc3-44e8-b0d2-d59c57045d83" />
+
 
 ### B3. SYN Flood dan Deteksinya
 *(Catatan: Pada pengujian awal di lingkungan WSL2, kernel secara bawaan sudah mengaktifkan `net.ipv4.tcp_syncookies = 1` sehingga antrean `SYN_RECV` tidak menumpuk. Agar perbandingan lonjakan `SYN_RECV` terlihat jelas serta perintah `sysctl` dapat diuji langsung di dalam container, `tcp_syncookies` awalnya diatur ke `0` pada `docker-compose.yml` dan serangan menggunakan alamat sumber spoofed internal subnet lab `-a 172.20.0.99` agar kernel `attacker` tidak membalas `SYN-ACK` dengan `RST`).*
@@ -338,6 +372,9 @@ Perbandingan & Penjelasan Mitigasi:
 3.  antrean SYN_RECV melonjak drastis menjadi 193 koneksi setengah terbuka (half-open) yang membanjiri tabel SYN backlog server dan berpotensi menyebabkan Denial of Service (DoS).
 4. Sebagai mitigasi, pengaktifan SYN Cookies (net.ipv4.tcp_syncookies=1) mencegah kehabisan memori antrean SYN backlog dengan cara tidak menyimpan informasi sesi saat paket SYN pertama diterima. Sebagai gantinya, server menyandikan parameter koneksi ke dalam Initial Sequence Number (ISN) paket SYN-ACK sebagai cryptographic cookie yang hanya akan mengalokasikan memori sumber daya server apabila klien membalas dengan paket ACK yang valid.
 
+**Hasil Bukti Praktikum**
+<img width="940" height="468" alt="image" src="https://github.com/user-attachments/assets/823b3841-cccb-4f9e-8b35-30bb80a20291" />
+
 
 ### B4. DNS Tunneling / Exfiltration
 Perintah dan hasil pengujian pada jaringan terisolasi (`internal: true`):
@@ -373,6 +410,9 @@ Analisis & Deteksi:
 Mengapa sulit diblokir firewall biasa: Protokol DNS (UDP/TCP port 53) merupakan layanan infrastruktur wajib untuk resolusi nama domain sehingga hampir selalu diizinkan keluar oleh firewall jaringan. Firewall tradisional hanya memeriksa aturan port dan protokol tanpa melakukan inspeksi mendalam (deep packet inspection) terhadap isi payload yang disisipkan sebagai label subdomain pada query DNS yang tampak sah.
 
 Indikator deteksi: Tingginya entropi karakter dan panjang subdomain yang tidak wajar pada permintaan DNS (seperti string heksadesimal panjang 3234353532303131313934.exfil.lab), serta lonjakan frekuensi query unik ke satu domain induk dalam rentang waktu singkat.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="289" alt="image" src="https://github.com/user-attachments/assets/6afde7fd-d84f-4558-b30d-4ec7080c2d96" />
 
 ---
 
@@ -436,6 +476,10 @@ $ docker compose -p k4 -f b/b1-compose/docker-compose.yml down -v
 Penjelasan Bukti:
 Volume vol-k4 berhasil mempertahankan data NIM (24552011194) di dalam /data/laporan-k4.txt meskipun container pembuatnya (w-k4) telah dihapus. Selain itu, container attacker berhasil mengakses halaman web default nginx pada http://target melalui jaringan internal k4_lab.
 
+**Hasil Bukti Praktikum**
+<img width="940" height="442" alt="image" src="https://github.com/user-attachments/assets/7d974ee0-395f-40be-9a0f-0410885d333d" />
+
+
 ### Tugas 2 (Pertemuan 2): Kriptografi
 ```bash
 $ docker run --rm -v "$PWD":/work uts-openssl sh -c 'echo isi laporan k4 > laporan-k4.txt && openssl enc -aes-256-cbc -pbkdf2 -salt -in laporan-k4.txt -out laporan-k4.enc -pass pass:kunci-k4-2026 && sha256sum laporan-k4.txt && openssl enc -d -aes-256-cbc -pbkdf2 -in laporan-k4.enc -out hasil-k4.txt -pass pass:kunci-k4-2026 && sha256sum hasil-k4.txt'
@@ -451,6 +495,10 @@ notAfter=Dec 14 11:42:15 2026 GMT
 
 Penjelasan Bukti:
 Nilai hash SHA-256 antara berkas asli (laporan-k4.txt) dan berkas hasil dekripsi (hasil-k4.txt) sama persis (5b8213129068e6fc0f3b84877a252139b64d62447015e620642038aa92130494), membuktikan keutuhan data terjaga selama siklus enkripsi–dekripsi simetris. Pada sertifikat X.509 yang dihasilkan, nilai Subject dan Issuer sama-sama CN=k4.uts.local karena sertifikat tersebut berjenis self-signed (ditandatangani oleh kunci privatnya sendiri).
+
+**Hasil Bukti Praktikum**
+<img width="938" height="311" alt="image" src="https://github.com/user-attachments/assets/1bd8934f-fa39-4e00-b370-0a785a7c894a" />
+
 
 
 ### Tugas 3 (Pertemuan 3): ARP Spoofing & Mitigasi Static ARP
@@ -522,6 +570,12 @@ IP address       HW type     Flags       HW address            Mask     Device
 Penjelasan Bukti:
 Sebelum serangan dijalankan, IP gateway (172.20.0.3) dipetakan ke MAC address aslinya (5e:f8:f1:9c:0e:35) dengan status dinamis (Flags 0x2). Saat arpspoof dijalankan oleh penyerang-k4, tabel ARP korban diracuni (ARP cache poisoning) sehingga 172.20.0.3 berubah mengarah ke MAC address penyerang (16:6a:eb:47:35:eb). Setelah mitigasi static ARP diterapkan, entri 172.20.0.3 kembali terikat ke MAC address gateway asli (5e:f8:f1:9c:0e:35) dengan status permanen (Flags 0x6) sehingga kebal terhadap pemalsuan paket ARP berikutnya.
 
+**Hasil Bukti Praktikum**
+<img width="940" height="358" alt="image" src="https://github.com/user-attachments/assets/f61abf15-c8dd-4dbc-b581-8a16fe1b8565" />
+<img width="940" height="159" alt="image" src="https://github.com/user-attachments/assets/6674921d-7ea0-47c0-a3bc-75b6cda12a32" />
+
+
+
 ### Tugas 4 (Pertemuan 4): Analisis handshake WPA2
 
 *(Catatan: Berkas `handshake-k4.cap` dan `wordlist-k4.txt` yang disediakan penguji tidak ditemukan di direktori praktikum maupun direktori unduhan sistem, sehingga proses cracking tidak dapat dijalankan).*
@@ -544,6 +598,9 @@ Penjelasan Bukti & Smurf Attack:
 Hasil Pengujian ICMP: Pengiriman paket ICMP Echo Request (type=8) dari container Scapy (172.20.0.5) ke IP korban-k4 (172.20.0.2) di jaringan terisolasi lab-arp-k4 berhasil dijawab dengan paket balasan bertipe ICMP 0 (Echo Reply) dan nilai TTL = 64 (nilai TTL bawaan kernel Linux).
 
 Penjelasan Smurf Attack: Smurf attack adalah jenis serangan Distributed Denial of Service (DDoS) berbasis amplifikasi pada lapisan jaringan (network layer). Penyerang mengirimkan paket ICMP Echo Request dalam jumlah besar menuju alamat IP Broadcast suatu jaringan dengan memalsukan (IP spoofing) alamat IP sumber menjadi alamat IP milik korban. Akibatnya, seluruh host di dalam jaringan broadcast tersebut akan merespons secara serentak dengan mengirimkan paket ICMP Echo Reply ke alamat IP korban, sehingga membanjiri bandwidth dan melumpuhkan layanan korban. Mitigasi utamanya adalah menonaktifkan penerusan directed broadcast pada router (no ip directed-broadcast) serta mengabaikan paket ICMP yang ditujukan ke alamat broadcast pada sistem operasi (net.ipv4.icmp_echo_ignore_broadcasts = 1).
+
+**Hasil Bukti Praktikum**
+<img width="940" height="402" alt="image" src="https://github.com/user-attachments/assets/ef021ec4-c9fc-4c66-b7ae-4150dd165f92" />
 
 
 ### Tugas 6 (Pertemuan 6): SYN Flood dan Three-Way Handshake
@@ -595,6 +652,10 @@ Paket 2 — SYN-ACK (Flags [S.]): Server merespons kesiapan koneksi dengan seq 2
 
 Paket 3 — ACK (Flags [.]): Klien mengonfirmasi penerimaan SYN-ACK dari server (ack 1 relatif), menandai selesainya proses three-way handshake sehingga koneksi berubah ke status ESTABLISHED sebelum pengiriman permintaan HTTP GET / HTTP/1.1.
 
+**Hasil Bukti Praktikum**
+<img width="940" height="422" alt="image" src="https://github.com/user-attachments/assets/c0a92e2a-53cc-4d14-b04b-2821dea43625" />
+
+
 ### Tugas 7 (Pertemuan 7): DNS Exfiltration
 ```bash
 $ docker compose -p k4 -f b/b4-dns-exfil/docker-compose.yml up -d
@@ -640,3 +701,7 @@ Penjelasan Bukti:
 Deteksi Label Hex pada Log DNS: Pada berkas dns-k4.log, server dnsmasq mencatat adanya permintaan resolusi DNS tipe A menuju subdomain heksadesimal 3234353532303131313934.k4.exfil.lab dari container attacker (172.21.0.3), dan skrip analisis_dns.py merekap adanya aktivitas query ke domain induk exfil.lab.
 
 Dekode Pesan Eksfiltrasi: Payload label heksadesimal 3234353532303131313934 berhasil didekode kembali menggunakan xxd -r -p menjadi pesan asli NIM mahasiswa, yaitu 24552011194, yang membuktikan bahwa data sensitif dapat diselundupkan keluar melalui label subdomain query DNS.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="438" alt="image" src="https://github.com/user-attachments/assets/006abca4-c9ee-4a03-82af-650e990c4d3a" />
+

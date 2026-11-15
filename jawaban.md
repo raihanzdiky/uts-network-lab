@@ -285,6 +285,7 @@ Konfigurasi jaringan menggunakan opsi internal: true dan tanpa pemetaan ports me
 **Hasil Bukti Praktikum**
 
 **yaml**
+
 <img width="922" height="332" alt="image" src="https://github.com/user-attachments/assets/6267a866-ada6-4173-99b9-9f50c2e54e5c" />
 
 

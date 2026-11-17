@@ -23,19 +23,23 @@ Seluruh praktikum dijalankan di dalam lingkungan jaringan terisolasi (`internal:
 
 ```text
 uts-network-lab/
-├── README.md                  # Panduan & ringkasan dokumentasi praktikum
-├── jawaban.md                 # Laporan lengkap berisi perintah, output log, dan analisis
-├── images/                    # Definisi Docker image praktikum
-│   ├── uts-openssl/           # Tools kriptografi OpenSSL
-│   ├── uts-kali-tools/        # Tools jaringan & keamanan (hping3, dsniff, scapy, aircrack-ng, tcpdump, dig)
-│   └── uts-dnsmasq/           # Server DNS lokal untuk simulasi eksfiltrasi
 ├── b/                         # Lingkungan Docker Compose Bagian B & C
 │   ├── b1-compose/            # Lab jaringan terisolasi (target & attacker)
 │   ├── b3-syn-flood/          # Lab simulasi serangan SYN Flood & TCP Handshake
 │   └── b4-dns-exfil/          # Lab simulasi DNS Tunneling / Exfiltration
-└── kasus/                     # Skrip pendukung studi kasus
-    ├── k5-scapy/kirim_icmp.py # Pengirim paket ICMP Echo Request berbasis Scapy
-    └── k9-dns-detect/analisis_dns.py # Penganalisis log DNS untuk deteksi eksfiltrasi
+├── images/                    # Definisi Docker image praktikum
+│   ├── uts-openssl/           # Tools kriptografi OpenSSL
+│   ├── uts-kali-tools/        # Tools jaringan & keamanan (hping3, dsniff, scapy, aircrack-ng, tcpdump, dig)
+│   └── uts-dnsmasq/           # Server DNS lokal untuk simulasi eksfiltrasi
+├── kasus/                     # Skrip pendukung studi kasus
+|   ├── k5-scapy/kirim_icmp.py # Pengirim paket ICMP Echo Request berbasis Scapy
+|   └── k9-dns-detect/analisis_dns.py # Penganalisis log DNS untuk deteksi eksfiltrasi
+├── samples/                   # template untuk wordlist dan capture files yang digunakan di Tugas 4 (Pertemuan 4): Analisis Handshake WPA2.
+|   ├── handshake-k4.cap       # File ini digunakan untuk testing aircrack-ng -w
+|   └── wordlist-k4.txt        # File .txt berisi kata sandi untuk cracking dengan aircrack-ng
+├── README.md                  # Panduan & ringkasan dokumentasi praktikum
+└── jawaban.md                 # Laporan lengkap berisi perintah, output log, dan analisis
+
 ```
 
 ---

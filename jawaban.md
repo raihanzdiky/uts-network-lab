@@ -581,14 +581,72 @@ Sebelum serangan dijalankan, IP gateway (172.20.0.3) dipetakan ke MAC address as
 
 ### Tugas 4 (Pertemuan 4): Analisis handshake WPA2
 
-*(Catatan: Berkas `handshake-k4.cap` dan `wordlist-k4.txt` yang disediakan penguji tidak ditemukan di direktori praktikum maupun direktori unduhan sistem, sehingga proses cracking tidak dapat dijalankan).*
-Perintah pengujian yang disiapkan sesuai parameter Kasus 4:
 ```bash
+$ cd samples
+$ wget -q "[https://raw.githubusercontent.com/aircrack-ng/aircrack-ng/master/test/wpa.cap](https://raw.githubusercontent.com/aircrack-ng/aircrack-ng/master/test/wpa.cap)" -O handshake-k4.cap
+$ file handshake-*.cap
+handshake-k4.cap: pcap capture file, microsecond ts (little-endian) - version 2.4 (802.11 with Prism header, capture length 65535)
+
+$ ls -lh handshake-k4.cap wordlist-k4.txt
+-rwxrwxrwx 1 diky diky 3.2K Nov 17 13:56 handshake-k4.cap
+-rwxrwxrwx 1 diky diky  212 Nov 17 13:43 wordlist-k4.txt
+
 $ docker run --rm -v "$PWD":/work uts-kali-tools aircrack-ng -w wordlist-k4.txt handshake-k4.cap
-# File handshake-k4.cap dan wordlist-k4.txt tidak ditemukan pada repositori/direktori kerja.
+Reading packets, please wait...
+Opening handshake-k4.cap
+Read 13 packets.
+
+   #  BSSID              ESSID                     Encryption
+
+   1  00:0D:93:EB:B0:8C  test                      WPA (1 handshake)
+
+Choosing first network as target.
+
+Reading packets, please wait...
+Opening handshake-k4.cap
+Read 13 packets.
+
+1 potential targets
+
+                               Aircrack-ng 1.7
+
+      20/20 keys tested (1049.43 k/s)
+
+      Time left: --
+
+                           KEY NOT FOUND
+
+
+      Master Key     : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+      Transient Key  : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+                       00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+
+      EAPOL HMAC     : 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 ```
+
+Penjelasan tiap langkah:
+1. Pengunduhan Berkas Capture (wget): Berpindah ke direktori samples dan mengunduh sampel tangkapan lalu lintas Wi-Fi WPA resmi dari proyek Aircrack-ng ke dalam berkas handshake-k4.cap.
+
+2. Verifikasi Format & Ukuran Berkas (file dan ls -lh): Perintah file memvalidasi bahwa handshake-k4.cap merupakan berkas tangkapan paket jaringan IEEE 802.11 (pcap capture file berukuran 3.2 KB), sementara wordlist-k4.txt (212 bytes) siap digunakan sebagai kamus pengujian.
+
+3. Analisis & Pengujian Kata Sandi (aircrack-ng):
+- aircrack-ng membaca 13 paket di dalam handshake-k4.cap dan berhasil mendeteksi 1 jaringan target dengan BSSID 00:0D:93:EB:B0:8C, ESSID test, serta status enkripsi WPA (1 handshake).
+- Alat melakukan dictionary attack offline dengan menghitung nilai PMK dan PTK untuk seluruh 20 kandidat kata sandi (20/20 keys tested) di dalam wordlist-k4.txt lalu mencocokkan nilai MIC-nya dengan frame EAPOL pada capture.
+- 
 Penjelasan Empat Langkah (4-Way Handshake) WPA2:
-Proses 4-way handshake pada protokol keamanan WPA2 (IEEE 802.11i) bertujuan untuk memverifikasi bahwa Access Point (AP) dan klien (Station/STA) sama-sama memiliki Pairwise Master Key (PMK) yang valid tanpa mengirimkan kunci tersebut secara langsung di udara, serta menghasilkan kunci sesi sementara (Pairwise Transient Key / PTK
+Proses 4-way handshake pada protokol keamanan WPA2 (IEEE 802.11i) bertujuan untuk memverifikasi bahwa Access Point (AP) dan klien (Station/STA) sama-sama memiliki Pairwise Master Key (PMK) yang sah tanpa mengirimkan kata sandi secara langsung di udara, sekaligus menghasilkan kunci sesi sementara (Pairwise Transient Key / PTK):
+1. Pesan 1 (AP $\rightarrow$ Klien): AP membangkitkan angka acak sekali pakai yang disebut ANonce (Authenticator Nonce) dan mengirimkannya kepada klien agar klien memiliki bahan parameter untuk menurunkan kunci sesi.
+2. Pesan 2 (Klien $\rightarrow$ AP): Klien membangkitkan SNonce (Supplicant Nonce), lalu menggabungkan PMK, ANonce, SNonce, serta alamat MAC AP dan klien untuk menghitung PTK. Klien kemudian mengirimkan SNonce beserta MIC (Message Integrity Code) ke AP guna membuktikan kepemilikan kunci yang valid.
+3. Pesan 3 (AP $\rightarrow$ Klien): AP menghitung PTK menggunakan parameter yang sama dan memverifikasi MIC dari klien. Jika valid, AP membangkitkan GTK (Group Temporal Key) untuk mengamankan lalu lintas broadcast/multicast, lalu mengirimkan GTK (yang telah dienkripsi dengan PTK) beserta MIC kembali ke klien.
+4. Pesan 4 (Klien $\rightarrow$ AP): Klien memverifikasi MIC dari AP, memasang kunci PTK dan GTK pada antarmuka nirkabelnya, lalu mengirimkan pesan konfirmasi (ACK) ke AP sebagai tanda bahwa seluruh lalu lintas data berikutnya siap dienkripsi.
+
+**Hasil Bukti Praktikum**
+<img width="940" height="468" alt="image" src="https://github.com/user-attachments/assets/9ae862f5-f3be-46ac-9108-e90ccb5b5cca" />
+
 
 ### Tugas 5 (Pertemuan 5): ICMP dengan Scapy
 ```bash

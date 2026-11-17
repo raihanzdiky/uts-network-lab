@@ -766,3 +766,47 @@ Dekode Pesan Eksfiltrasi: Payload label heksadesimal 3234353532303131313934 berh
 **Hasil Bukti Praktikum**
 <img width="940" height="438" alt="image" src="https://github.com/user-attachments/assets/006abca4-c9ee-4a03-82af-650e990c4d3a" />
 
+
+
+---
+
+## Pembersihan Resource Praktikum UTS
+
+```bash
+# 1. Hentikan & hapus semua container praktikum
+$ docker rm -f web-uts w1 host-a host-b dvwa w-k4 target-k4 korban-k4 gateway-k4 penyerang-k4 2>/dev/null || true
+
+# 2. Pastikan seluruh stack Docker Compose (Bagian B & Kasus k4) bersih
+$ docker compose -p k4 -f /mnt/d/uts-network-lab/b/b1-compose/docker-compose.yml down -v 2>/dev/null || true
+$docker compose -p k4 -f /mnt/d/uts-network-lab/b/b3-syn-flood/docker-compose.yml down -v 2>/dev/null \vert{}\vert{} true$ docker compose -p k4 -f /mnt/d/uts-network-lab/b/b4-dns-exfil/docker-compose.yml down -v 2>/dev/null || true
+
+# 3. Hapus network khusus praktikum (network default bridge/host/none tetap aman)
+$ docker network rm lab-net lab-arp-k4 2>/dev/null || true
+
+# 4. Hapus volume khusus praktikum
+$ docker volume rm data-uts vol-k4 2>/dev/null || true
+```
+
+Penjelasan :
+1. Penghapusan Container (docker rm -f): Menghentikan paksa dan menghapus seluruh container spesifik yang dibuat selama pengujian Bagian A, Bagian B, dan Bagian C (web-uts, w1, host-a, host-b, dvwa, w-k4, target-k4, korban-k4, gateway-k4, dan penyerang-k4) sehingga tidak ada proses latar belakang yang tertinggal.
+
+2. Pembersihan Stack Compose (docker compose ... down -v): Memastikan seluruh container, jaringan terisolasi (k4_lab), dan volume terkait pada layanan Docker Compose (B1, B3, B4, dan studi kasus k4) telah dimatikan dan dibersihkan sepenuhnya.
+
+3. Penghapusan Jaringan Lab (docker network rm): Menghapus jaringan bridge buatan (lab-net dan lab-arp-k4) tanpa mengganggu jaringan bawaan sistem Docker (bridge, host, dan none).
+
+4. Penghapusan Volume Data (docker volume rm): Menghapus volume penyimpanan persisten (data-uts dan vol-k4) agar ruang penyimpanan sistem kembali bersih setelah seluruh bukti praktikum tercatat.
+
+**Hasil Bukti Praktikum**
+<img width="1881" height="1005" alt="image" src="https://github.com/user-attachments/assets/cb97973e-735f-437c-a2bc-369d079177c4" />
+<img width="843" height="162" alt="image" src="https://github.com/user-attachments/assets/cdfe8c4c-c978-4a3f-bd29-471e9debabe5" />
+
+## Checklist Verifikasi Pengumpulan UTS
+
+| Item Verifikasi | Keterangan | Status |
+| :--- | :--- | :--- |
+| Semua 7 Tugas dikerjakan | Bagian C Tugas 1–7 (`k4`) selesai dieksekusi & dianalisis | ✅ Complete |
+| Output terminal ada di `jawaban.md` | Seluruh log perintah dan hasil eksekusi terdokumentasi lengkap | ✅ Complete |
+| NIM & Kasus ada di `jawaban.md` | NIM `24552011194` (`34 mod 10 = 4`, Kasus 4 / `k4`) | ✅ Complete |
+| Semua container SUDAH DIHAPUS | Container praktikum UTS dibersihkan (`docker rm -f`) | ✅ Cleaned |
+| Semua network SUDAH DIHAPUS | Jaringan lab UTS (`lab-net`, `lab-arp-k4`, `k4_lab`) dihapus | ✅ Cleaned |
+| Semua volume SUDAH DIHAPUS | Volume UTS (`data-uts`, `vol-k4`) dihapus (kecuali `local` default) | ✅ Cleaned |
